@@ -1,10 +1,51 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import z from 'zod';
+import { RestaurantModule } from './restaurant/restaurant.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'development'
+          ? '.env.development'
+          : 'env.test',
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      validate: (env) => {
+        console.log(env);
+        return z
+          .object({
+            NODE_ENV: z.enum(['development', 'test']),
+            DB_HOST: z.string(),
+            DB_PORT: z.string(),
+            DB_USERNAME: z.string(),
+            DB_PASSWORD: z.string(),
+            DB_NAME: z.string(),
+          })
+          .parse(env);
+      },
+    }),
+    RestaurantModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +(process.env.DB_PORT as string),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      logging: true,
+      synchronize: true,
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+    }),
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
