@@ -16,7 +16,6 @@ import { RestaurantModule } from './restaurant/restaurant.module';
           : 'env.test',
       ignoreEnvFile: process.env.NODE_ENV === 'production',
       validate: (env) => {
-        console.log(env);
         return z
           .object({
             NODE_ENV: z.enum(['development', 'test']),
@@ -38,7 +37,8 @@ import { RestaurantModule } from './restaurant/restaurant.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       logging: true,
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

@@ -1,25 +1,25 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsBoolean, IsString, Length, MaxLength } from 'class-validator';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@ObjectType()
-export class RestaurantModel {
-  @Field(() => Int)
+@Entity('restaurant')
+export class RestaurantEntity {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Column()
   @IsString()
   @Length(5, 10)
   name: string;
 
-  @Field()
+  @Column()
   @IsBoolean()
   isGood: boolean;
 
-  @Field()
+  @Column()
   @IsString()
   address: string;
 
-  @Field()
+  @Column()
   @IsString()
   @MaxLength(10)
   ownerName: string;
