@@ -4,7 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import z from 'zod';
-import { RestaurantModule } from './restaurant/restaurant.module';
+import { CommonModule } from './common/common.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -28,7 +29,6 @@ import { RestaurantModule } from './restaurant/restaurant.module';
           .parse(env);
       },
     }),
-    RestaurantModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -44,6 +44,8 @@ import { RestaurantModule } from './restaurant/restaurant.module';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    CommonModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
