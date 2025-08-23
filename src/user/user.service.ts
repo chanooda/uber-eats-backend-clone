@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserInput } from './dtos/create-user.dto';
+import { CreateUserInput, CreateUserOutput } from './dtos/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 
 @Injectable()
@@ -11,7 +11,11 @@ export class UserService {
     readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async signup({ email, password, role }: CreateUserInput) {
+  async signup({
+    email,
+    password,
+    role,
+  }: CreateUserInput): Promise<CreateUserOutput> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (user) {
       throw Error('이미 존재하는 회원입니다.');
@@ -22,7 +26,7 @@ export class UserService {
         role,
       });
       await this.userRepository.save(newUser);
-      return { ok: true };
+      return { success: true };
     }
   }
 }
